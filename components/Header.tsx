@@ -9,7 +9,7 @@ const forceRedirectUrl = process.env.CLERK_SIGN_IN_FORCE_REDIRECT_URL;
 function Header() {
   const { userId } = auth();
   return (
-    <header className="flex justify-between items-center px-8 border-b mb-5">
+    <header className="flex justify-between items-center pl-8 pr-10 border-b mb-5">
       <div className="h-20 items-center overflow-hidden flex">
         <Link href="/">
           <Image
