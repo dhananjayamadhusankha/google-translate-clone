@@ -79,16 +79,45 @@ export async function getTranslations(
     const user: IUser | null = await User.findOne({ userId: userId });
 
     if (user) {
-      user.translations.sort((a: ITranslation, b: ITranslation) => 
-        b.timestamp.getTime() - a.timestamp.getTime()
+      user.translations.sort(
+        (a: ITranslation, b: ITranslation) =>
+          b.timestamp.getTime() - a.timestamp.getTime()
       );
       return user.translations;
-    }else{
+    } else {
       console.log(`User with user ID : ${userId} not found`);
       return [];
     }
   } catch (error) {
     console.error("Error retriving translations: ", error);
+    throw error;
+  }
+}
+
+export async function removeTranslation(
+  userId: string,
+  transationId: string
+): Promise<IUser> {
+  await connectDB();
+
+  console.log("userId >>>>>", userId)
+  console.log("transationId>>>>>>>", transationId)
+  
+
+  try {
+    const user: IUser | null = await User.findOneAndUpdate(
+      { userId: userId }, // Find the user with the given userid
+      { $pull: { translations: { _id: transationId } } }, // Remove the translation with the given _id
+      { new: true } // Return the updated document
+    );
+
+    if (!user) throw new Error("User not found");
+
+    console.log("Translation is removed!: ", user);
+
+    return user;
+  } catch (error) {
+    console.error("Error removing translations: ", error);
     throw error;
   }
 }

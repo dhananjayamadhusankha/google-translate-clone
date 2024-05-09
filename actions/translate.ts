@@ -4,6 +4,7 @@ import { State } from "@/components/TranslationForm";
 import { addOrUpdateUser } from "@/mongodb/models/User";
 import { auth } from "@clerk/nextjs/server";
 import axios from "axios";
+import { revalidateTag } from "next/cache";
 import { v4 } from "uuid";
 
 const key = process.env.AZURE_TEXT_TRANSLATION_KEY;
@@ -74,6 +75,8 @@ export default async function translate(
   } catch (error) {
     console.log(error);
   }
+
+  revalidateTag("translationHistory");
 
   return {
     ...previousState,
