@@ -1,5 +1,5 @@
+import { ITranslation } from "@/mongodb/models/User";
 import { auth } from "@clerk/nextjs/server";
-import React from "react";
 
 async function TranslationHistory() {
   const { userId } = auth();
@@ -10,11 +10,19 @@ async function TranslationHistory() {
       : process.env.VERCEL_URL
   }/translationHistory?userId=${userId}`;
 
-  const responce = await fetch(url, { 
+  const response = await fetch(url, {
     next: {
-        tags: ['translationHistory']
-    }
-  })
+      tags: ["translationHistory"],
+    },
+  });
+
+  console.log(response);
+
+  const { translations }: { translations: Array<ITranslation> } =
+    await response.json();
+
+  console.log(translations);
+  
   return <div>TranslationHistory</div>;
 }
 

@@ -58,7 +58,7 @@ export async function addOrUpdateUser(
       update,
       options
     );
-    
+
     console.log("User added or updated successfully: ", user);
     if (!user) {
       throw new Error("User not found and as not created");
@@ -66,6 +66,29 @@ export async function addOrUpdateUser(
     return user;
   } catch (error) {
     console.error("Error ading or update user: ", error);
-    return undefined
+    return undefined;
+  }
+}
+
+export async function getTranslations(
+  userId: string
+): Promise<Array<ITranslation> | undefined> {
+  await connectDB();
+
+  try {
+    const user: IUser | null = await User.findOne({ userId: userId });
+
+    if (user) {
+      user.translations.sort((a: ITranslation, b: ITranslation) => 
+        b.timestamp.getTime() - a.timestamp.getTime()
+      );
+      return user.translations;
+    }else{
+      console.log(`User with user ID : ${userId} not found`);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error retriving translations: ", error);
+    throw error;
   }
 }
