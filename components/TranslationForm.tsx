@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { ITranslationLanguages } from "@/types/ITranslationLanguages";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import translate from "@/actions/translate";
 import Image from "next/image";
@@ -29,6 +29,20 @@ function TranslationForm({ languages }: { languages: ITranslationLanguages }) {
   const [input, setinput] = useState("");
   const [output, setoutput] = useState("");
   const [state, formAction] = useFormState(translate, initialState);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if(!input.trim()) return
+
+    const delayDebounceFn = setTimeout(() => {
+        submitButtonRef.current?.click()
+    }, 500)
+  
+    return () => {
+      clearTimeout(delayDebounceFn)
+    }
+  }, [input])
+  
 
   useEffect(() => {
     if (state.output) {
@@ -120,12 +134,13 @@ function TranslationForm({ languages }: { languages: ITranslationLanguages }) {
             />
           </div>
         </div>
-        <div className="mt-3">
+        <div className="mt-6">
           <button
             type="submit"
             className="bg-blue-500 px-5 py-3 rounded-md text-white cursor-pointer"
+            ref={submitButtonRef}
           >
-            Submit
+            Translate
           </button>
         </div>
       </form>
