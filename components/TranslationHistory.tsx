@@ -23,12 +23,12 @@ async function TranslationHistory() {
     },
   });
 
-//   console.log(response);
+  //   console.log(response);
 
   const { translations }: { translations: Array<ITranslation> } =
     await response.json();
 
-//   console.log(translations);
+  //   console.log(translations);
 
   return (
     <div>
@@ -37,9 +37,12 @@ async function TranslationHistory() {
         <p className="mb-5 text-gray-500">No translations history</p>
       )}
 
-      <ul  className="border rounded-md divide-y">
+      <ul className="border rounded-md divide-y">
         {translations.map((translation) => (
-          <li key={translation._id} className="p-5 justify-between items-center flex hover:bg-gray-50 relative">
+          <li
+            key={translation._id}
+            className="p-5 justify-between items-center flex hover:bg-gray-50 relative"
+          >
             <div>
               <p className="mb-5 text-sm text-gray-500">
                 {getLanguages(translation.from)}
@@ -53,7 +56,9 @@ async function TranslationHistory() {
             </div>
 
             <p className="absolute top-2 right-2 text-gray-300 text-sm">
-                <TimeAgoText date={new Date(translation.timestamp).toISOString()} />
+              <TimeAgoText
+                date={new Date(translation.timestamp).toISOString()}
+              />
             </p>
 
             <DeleteTranslationButton id={translation._id} />
