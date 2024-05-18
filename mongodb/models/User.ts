@@ -15,7 +15,7 @@ interface IUser extends Document {
 }
 
 const translationsSchema = new Schema<ITranslation>({
-  timestamp: { type: Date, default: Date.now() },
+  timestamp: { type: Date, default: Date.now },
   fromText: String,
   from: String,
   toText: String,
@@ -42,7 +42,7 @@ export async function addOrUpdateUser(
   const filter = { userId: userId };
   const update = {
     $set: { userId: userId },
-    $push: { translations: translation },
+    $push: { translations: translation, },
   };
 
   // Upsert option ensures that the document is created if it doesn't exist
