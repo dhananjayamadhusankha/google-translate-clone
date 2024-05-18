@@ -31,17 +31,44 @@ function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
     }
   };
 
+  const startRecording = () => {};
+  const stopRecording = () => {};
+
   return (
-    <div>
-      <MicIcon size={20} />
+    <div
+      className={`flex items-center group text-blue-500 bg-[#E7F0FE] cursor-pointer border rounded-md w-fit px-3 py-2 mb-5 ${
+        recordingStatus === "recording"
+          ? "bg-red-500 text-white"
+          : "hover:bg-[#E7F0FE]"
+      }`}
+    >
+      <MicIcon size={20} className="group-hover:underline" />
       {!permission && (
         <button onClick={getMicrophonePermission}>Get Microphone</button>
       )}
-      
+
       {pending && (
-        <p>
+        <p className="text-sm font-medium group-hover:underline ml-2">
           {recordingStatus === "recording" ? "Recording" : "Stop recording..."}
         </p>
+      )}
+
+      {permission && recordingStatus === "inactive" && !pending && (
+        <button
+          onClick={startRecording}
+          className="text-sm font-medium group-hover:underline ml-2"
+        >
+          Speak
+        </button>
+      )}
+
+      {recordingStatus === "recording" && (
+        <button
+          onClick={stopRecording}
+          className="text-sm font-medium group-hover:underline ml-2 mt-2"
+        >
+          Speak
+        </button>
       )}
     </div>
   );
