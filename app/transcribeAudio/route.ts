@@ -1,11 +1,11 @@
-import { OpenAIClient, OpenAIKeyCredential } from "@azure/openai";
+import { AzureKeyCredential, OpenAIClient } from "@azure/openai";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get("audio") as File;
 
-  console.log(file);
+  console.log(">>>",file);
 
   const apiKey = process.env.AZURE_API_KEY;
   const endpoint = process.env.AZURE_ENDPOINT;
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const audio = new Uint8Array(arrayBuffer);
 
-  const client = new OpenAIClient(endpoint, new OpenAIKeyCredential(apiKey));
+  const client = new OpenAIClient(endpoint, new AzureKeyCredential(apiKey));
 
   const result = await client.getAudioTranscription(deploymentName, audio);
 
