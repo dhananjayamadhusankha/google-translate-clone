@@ -1,14 +1,18 @@
 "use client";
 
 import { MicIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
+export const mimeType = "audio/webm";
+
 function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
-  const [permission, setPermission] = useState(false);
-  const [recordingStatus, setRecordingStatus] = useState("inactive");
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const { pending } = useFormStatus();
+  const [permission, setPermission] = useState(false);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([])
+  const [recordingStatus, setRecordingStatus] = useState("inactive");
+  const mediaRecorder = useRef<MediaRecorder | null>(null)
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     getMicrophonePermission();
@@ -31,8 +35,38 @@ function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
     }
   };
 
-  const startRecording = () => {};
-  const stopRecording = () => {};
+  const startRecording = () => {
+    if (stream === null || pending) return
+
+    setRecordingStatus("recording")
+
+    // Create a new media recorder instance using the stream
+    const media = new MediaRecorder(stream, {mimeType})
+    mediaRecorder.current = media
+    mediaRecorder.current?.start()
+
+    const localAudioChunks: Blob[] = []
+
+    mediaRecorder.current.ondataavailable = (event) => {
+      if (typeof event.data === undefined) return
+      if (event.data.size === 0) return
+      
+      localAudioChunks.push(event.data)
+    }
+    setAudioChunks(localAudioChunks)
+  };
+  const stopRecording = () => {
+    if (mediaRecorder.current === null || pending) return
+
+    setRecordingStatus("inactive")
+    mediaRecorder.current.stop()
+
+    mediaRecorder.current.onstop = () => {
+      const audioBlob = new Blob(audioChunks, {type: mimeType})
+      uploadAudio(audioBlob)
+      setAudioChunks([])
+    }
+  };
 
   return (
     <div
@@ -44,7 +78,7 @@ function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
     >
       <MicIcon size={20} className="group-hover:underline" />
       {!permission && (
-        <button onClick={getMicrophonePermission}>Get Microphone</button>
+        <button onClick={getMicrophonePermission} className="text-sm font-medium group-hover:underline ml-2">Get Microphone</button>
       )}
 
       {pending && (
@@ -65,9 +99,9 @@ function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
       {recordingStatus === "recording" && (
         <button
           onClick={stopRecording}
-          className="text-sm font-medium group-hover:underline ml-2 mt-2"
+          className="text-sm font-medium group-hover:underline ml-2"
         >
-          Speak
+          Stop
         </button>
       )}
     </div>
