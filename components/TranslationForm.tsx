@@ -66,6 +66,20 @@ function TranslationForm({ languages }: { languages: ITranslationLanguages }) {
     const mimeType = "audio/webm";
 
     const file = new File([blob], mimeType, { type: mimeType });
+
+    const formData = new FormData();
+    formData.append("audio", file);
+
+    const response = await fetch("/transcribeAudio", {
+      method: "POST",
+      body: formData
+    })
+
+    const audio = await response.json()
+
+    if (audio.text) {
+      setinput(audio.text);
+    }
   };
 
   return (

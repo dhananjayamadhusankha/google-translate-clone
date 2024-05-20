@@ -1,5 +1,5 @@
 import { getTranslations } from "@/mongodb/models/User";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -7,5 +7,5 @@ export async function GET(request: NextRequest) {
 
   const translations = await getTranslations(userId!);
 
-  return Response.json({ translations });
+  return NextResponse.json({ translations });
 }
