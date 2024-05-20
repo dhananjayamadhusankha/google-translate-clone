@@ -7,10 +7,14 @@ export async function POST(request: NextRequest) {
 
   console.log(file);
 
+  const apiKey = process.env.AZURE_API_KEY;
+  const endpoint = process.env.AZURE_ENDPOINT;
+  const deploymentName = process.env.AZURE_DEPLOYMENT_NAME;
+
   if (
-    process.env.AZURE_APT_KEY === undefined ||
-    process.env.AZURE_ENDPOINT === undefined ||
-    process.env.AZURE_DEPLOYMENT_NAME
+    apiKey === undefined ||
+    endpoint === undefined ||
+    deploymentName === undefined
   ) {
     console.error("Azure credentials not set");
     return {
@@ -29,17 +33,11 @@ export async function POST(request: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const audio = new Uint8Array(arrayBuffer);
 
-  const client = new OpenAIClient(
-    process.env.AZURE_ENDPOINT,
-    new OpenAIKeyCredential(process.env.AZURE_APT_KEY)
-  );
+  const client = new OpenAIClient(endpoint, new OpenAIKeyCredential(apiKey));
 
-  const result = await client.getAudioTranscription(
-    process.env.AZURE_DEPLOYMENT_NAME as string,
-    audio
-  );
+  const result = await client.getAudioTranscription(deploymentName, audio);
 
-  console.log(`Transcription: ${result.text}`)
+  console.log(`Transcription: ${result.text}`);
 
-  return NextResponse.json({text: result.text})
+  return NextResponse.json({ text: result.text });
 }
