@@ -35,7 +35,7 @@ function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
     }
   };
 
-  const startRecording = () => {
+  const startRecording = async () => {
     if (stream === null || pending) return
 
     setRecordingStatus("recording")
@@ -48,14 +48,14 @@ function Recorder({ uploadAudio }: { uploadAudio: (blob: Blob) => void }) {
     const localAudioChunks: Blob[] = []
 
     mediaRecorder.current.ondataavailable = (event) => {
-      if (typeof event.data === undefined) return
+      if (typeof event.data === "undefined") return
       if (event.data.size === 0) return
       
       localAudioChunks.push(event.data)
     }
     setAudioChunks(localAudioChunks)
   };
-  const stopRecording = () => {
+  const stopRecording = async () => {
     if (mediaRecorder.current === null || pending) return
 
     setRecordingStatus("inactive")
